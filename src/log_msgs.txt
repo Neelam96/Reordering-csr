@@ -1,0 +1,2 @@
+size of single edge_data element: 2
+Converged using 5 round(s).
