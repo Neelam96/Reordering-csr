@@ -4,8 +4,13 @@
 #include <vector>
 #include <algorithm>
 #include <boost/algorithm/string.hpp>
+#include <unordered_map> 
 
 #include "graph.h"
+using namespace std;
+
+uint64_t start_address;
+uint64_t cache_line_size = 64;
 
 graph::graph() {
   is_allocated = false;
@@ -94,6 +99,7 @@ std::vector<Edge> parse_el(std::fstream& f_dimacs, int& num_nodes, int& num_edge
 
 }
 
+
 std::vector<Edge> parse_dimacs(std::fstream& f_dimacs, int& num_nodes, int& num_edges) {
   std::string line;
   std::vector<Edge> edges;
@@ -122,6 +128,46 @@ std::vector<Edge> parse_dimacs(std::fstream& f_dimacs, int& num_nodes, int& num_
 
 //  print_coordinates(edges);
   return edges;
+}
+
+void graph::reorder_edge_dst()
+{
+
+    int avg_degree = num_edges / num_nodes;
+      uint64_t assigned_value = 0;
+    unordered_map<int, uint64_t> umap;
+
+  for (auto n = begin(); n < end(); n++) {
+    if(get_out_degree(n) > avg_degree){
+      for (auto e = edge_begin(n); e < edge_end(n); e++) {
+        if(umap.find(get_edge_dst(e)) == umap.end())
+        {
+          umap[get_edge_dst(e)] = assigned_value;
+          assigned_value++;
+        }
+      }
+
+    }
+  }
+
+  for (auto n = begin(); n < end(); n++) {
+    if(get_out_degree(n) <= avg_degree){
+      for (auto e = edge_begin(n); e < edge_end(n); e++) {
+        if(umap.find(get_edge_dst(e)) == umap.end())
+        {
+          umap[get_edge_dst(e)] = assigned_value;
+          assigned_value++;
+        }
+      }
+
+    }
+  }
+
+  for(auto e = 0; e < num_edges; e++)
+  {
+    edge_dst[e] = edge_dst[umap[e]];
+  }
+
 }
 
 void gen_csr(std::vector<Edge>& edges, 
@@ -154,6 +200,8 @@ void gen_csr(std::vector<Edge>& edges,
   }
   edge_dst[num_edges] = num_nodes;
   edge_data[num_edges] = 0;
+  
+
 }
 
 void gen_transposed_csr(std::vector<Edge>& edges,
@@ -186,6 +234,8 @@ void gen_transposed_csr(std::vector<Edge>& edges,
   in_edge_data[num_edges] = 0;
 }
 
+
+
 bool graph::construct_from_dimacs(char *argv[]) {
   std::fstream f_dimacs(argv[1], std::ios_base::in);
   if (!f_dimacs) {
@@ -203,6 +253,8 @@ bool graph::construct_from_dimacs(char *argv[]) {
   pr[0] = new double [num_nodes+1];
   pr[1] = new double [num_nodes+1];
   out_degree = new int [num_nodes+1];
+  start_address = (uint64_t) &pr[0][0];
+  std::cout<<"start address: "<<std::hex<<start_address<<std::endl;
 #endif
   edge_range = new edge_t [num_nodes+1];
   in_edge_range = new in_edge_t [num_nodes+1];
@@ -210,8 +262,8 @@ bool graph::construct_from_dimacs(char *argv[]) {
   edge_dst = new node_t [num_edges+1];
   edge_data = new edge_data_t [num_edges+1];
 
-  edge_data_start_address = edge_data;
-  std::cout<<"size of single edge_data element: "<<(sizeof(edge_data)/sizeof(edge_data[0]))<<"\n";
+  //edge_data_start_address = edge_data;
+  //std::cout<<"size of single edge_data element: "<<(sizeof(edge_data)/sizeof(edge_data[0]))<<"\n";
 
   in_edge_dst = new node_t [num_edges+1];
   in_edge_data = new in_edge_data_t [num_edges+1];
@@ -220,6 +272,9 @@ bool graph::construct_from_dimacs(char *argv[]) {
 
   gen_csr(edges, edge_range, edge_dst, edge_data, num_nodes, num_edges);
   gen_transposed_csr(edges, in_edge_range, in_edge_dst, in_edge_data, num_nodes, num_edges);
+
+  reorder_edge_dst();
+
 
   return true;
 }
@@ -318,3 +373,21 @@ void graph::print_in_edges() {
     }
   }
 }
+
+void graph::print_pr(){
+  std::cout << "pr values" << std::endl;
+  for(auto i = 0; i < 2; i++)
+  {
+    for(auto j = 0; j < num_nodes; j++)
+    {
+      // if(j==0){
+      // double *addr = &pr[i][j];
+      std::cout << i <<"\t"<<j<<"\t"<<get_pr(j,i) << "\n";
+    // }
+    }
+    std::cout << std::endl;
+  }
+}
+
+
+

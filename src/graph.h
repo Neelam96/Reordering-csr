@@ -1,9 +1,14 @@
 #ifndef SP2018_CS377P_GRAPH_H
 #define SP2018_CS377P_GRAPH_H
 
+#define SP2018_CS377P_STRUCT_OF_ARRAYS
+
 #include <string>
 #include <cassert>
 #include <iostream>
+#include <iterator>
+#include <set>
+#include <unordered_map> 
 
 #ifndef SP2018_CS377P_STRUCT_OF_ARRAYS
 struct Node {
@@ -12,7 +17,10 @@ struct Node {
 };
 #endif
 
-uint64_t edge_data_start_address=0;
+//uint64_t edge_data_start_address=0;
+extern uint64_t start_address;
+extern uint64_t cache_line_size;
+
 
 class graph {
 public:
@@ -25,6 +33,8 @@ public:
   using in_edge_t = edge_t;
   using in_edge_data_t = edge_data_t;
 
+
+
 private:
   node_t num_nodes;
   edge_t num_edges;
@@ -35,11 +45,14 @@ private:
   double* pr[2];
   int* out_degree;
 #endif
-
+//initial commit
   // the csr graph
   edge_t* edge_range;
   node_t* edge_dst;
   edge_data_t* edge_data;
+
+  //reordered mapping
+  // node_t* reordered_ind;
 
   // the transposed csr graph
   in_edge_t* in_edge_range;
@@ -91,6 +104,8 @@ assert( n >= 0 && n < num_nodes); return pr[which][n]; }
   void print_csr_transposed();
   void print_edges();
   void print_in_edges();
+  void print_pr();
+  void reorder_edge_dst();
 };
 
 #endif
