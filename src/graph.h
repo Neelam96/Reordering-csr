@@ -102,7 +102,7 @@ assert( n >= 0 && n < num_nodes); return pr[which][n]; }
   void print_edges();
   void print_in_edges();
   void print_pr();
-  void reorder_edge_dst();
+
 };
 
 #endif

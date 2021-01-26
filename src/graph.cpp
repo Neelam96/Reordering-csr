@@ -131,45 +131,7 @@ std::vector<Edge> parse_dimacs(std::fstream& f_dimacs, int& num_nodes, int& num_
   return edges;
 }
 
-void graph::reorder_edge_dst()
-{
 
-    int avg_degree = num_edges / num_nodes;
-      uint64_t assigned_value = 0;
-    unordered_map<int, uint64_t> umap;
-
-  for (auto n = begin(); n < end(); n++) {
-    if(get_out_degree(n) > avg_degree){
-      for (auto e = edge_begin(n); e < edge_end(n); e++) {
-        if(umap.find(get_edge_dst(e)) == umap.end())
-        {
-          umap[get_edge_dst(e)] = assigned_value;
-          assigned_value++;
-        }
-      }
-
-    }
-  }
-
-  for (auto n = begin(); n < end(); n++) {
-    if(get_out_degree(n) <= avg_degree){
-      for (auto e = edge_begin(n); e < edge_end(n); e++) {
-        if(umap.find(get_edge_dst(e)) == umap.end())
-        {
-          umap[get_edge_dst(e)] = assigned_value;
-          assigned_value++;
-        }
-      }
-
-    }
-  }
-
-  for(auto e = 0; e < num_edges; e++)
-  {
-    edge_dst[e] = edge_dst[umap[e]];
-  }
-
-}
 
 //function: to generate the csr format
 void gen_csr(std::vector<Edge>& edges, 
@@ -235,8 +197,7 @@ void gen_transposed_csr(std::vector<Edge>& edges,
   in_edge_data[num_edges] = 0;
 }
 
-
-
+// function to generate the graph from gen_csr and assign memories to pr[][]
 bool graph::construct_from_dimacs(char *argv[]) {
   std::fstream f_dimacs(argv[1], std::ios_base::in);
   if (!f_dimacs) {
@@ -274,12 +235,10 @@ bool graph::construct_from_dimacs(char *argv[]) {
   gen_csr(edges, edge_range, edge_dst, edge_data, num_nodes, num_edges);
   gen_transposed_csr(edges, in_edge_range, in_edge_dst, in_edge_data, num_nodes, num_edges);
 
-  reorder_edge_dst();
-
-
   return true;
 }
 
+// function not in use currently but generates graph from an el file
 bool graph::construct_from_el(char *argv[]) {
   std::fstream f_el(argv[1], std::ios_base::in);
   if (!f_el) {

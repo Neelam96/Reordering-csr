@@ -54,14 +54,12 @@ private:
     cur = !cur;
   }
 
-  void scale() {
+  void scale() {    //function to normalize pagerank values
     double sum = 0.0;
     for (auto n = g.begin(); n < g.end(); n++) {
-      //std::cout<<"scale\n";
       sum += g.get_pr(n, cur);
     }
     for (auto n = g.begin(); n < g.end(); n++) {
-      //std::cout<<"scale2\n";
       g.get_pr(n, cur) /= sum;
     }
   }
@@ -95,11 +93,11 @@ public:
     std::cout << "Converged using " << round << " round(s)." << std::endl;
   }
 
-uint64_t returnLine(uint64_t address) //determines the cache line number of a given address
+uint64_t returnLine(uint64_t address) //determines the cache line number of a given address. Assumes that start address gives the first byte of the first cache line
 {
   return ((address/cache_line_size) - (start_address/cache_line_size));
 }
-void find_cacheLines(){
+void find_cacheLines(){  //calculates the cache lines required by pr[][] w/o reordering
 
   uint64_t total_cachelines = 0;
 
@@ -120,7 +118,7 @@ void find_cacheLines(){
   std::cout <<"Total cache lines in original case: " << std::dec <<total_cachelines <<std::endl;
 
 }
-void generate_mapping(){ //finds out the cache lines in reordered case
+void generate_mapping(){ //finds out the number of cache lines in reordered case
 
   int avg_degree = g.size_edges()/g.size_nodes();
   uint64_t assigned_value = 0;
@@ -180,9 +178,10 @@ uint64_t totalCacheLines = 0;
   std::cout << "Total cache lines in reordered case: " <<std::dec<< totalCacheLines<<std::endl;
 
 }
-  void compute_push() {
+  void compute_push() {  //function for push based computation of pagerank
     initialize();
 
+//reordering to check whether pagerank computation works with reordering or not
   int avg_degree = g.size_edges()/g.size_nodes();
   uint64_t assigned_value = 0;
   unordered_map<int, uint64_t> umap;
@@ -282,7 +281,7 @@ for (auto i : umap) {
     }
   }
 
-double calAvgDeg()
+double calAvgDeg()    //returns the average degree of the graph
 {
   int avg_degree = 0;
   uint64_t max_degree = 0;
