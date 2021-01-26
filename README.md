@@ -4,13 +4,11 @@ To know the difference between the proposed reordering and the actual ordering o
 
 Compile the program as:
 
-``` g++ ./src/pagerank.cpp ./src/graph.cpp ./src/graph.h -o pagerank
-```
+``` g++ ./src/pagerank.cpp ./src/graph.cpp ./src/graph.h -o pagerank```
 
 Run the pagerank program:
 
-``` ./pagerank <input-graph-dimacs-file> <no-of-nodes> <no-of-edges> <pull | push> <threshold>
-```
+``` ./pagerank <input-graph-dimacs-file> <no-of-nodes> <no-of-edges> <pull | push> <threshold> ```
 
 ``` <pull | push> ``` 
 is used to used to determine the type of computation for pagerank should be pull-type or push-type
@@ -27,7 +25,7 @@ There is a Python script inside ```/inputs/``` folder ```create_dimacs.py```
 
 Command to run this script:
 
-```python create_dimacs.py <input.el> <no_of_nodes> <no_of_edges>
+```python create_dimacs.py <input.el> <no_of_nodes> <no_of_edges> ```
 
 ## Issues
 
