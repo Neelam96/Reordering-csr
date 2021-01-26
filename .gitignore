@@ -1,6 +1,9 @@
 # Prerequisites
 *.d
 
+# folders
+inputs
+
 # Compiled Object files
 *.slo
 *.lo
@@ -38,5 +41,4 @@
 *.el
 *.dimacs
 
-# folders
-inputs
+
