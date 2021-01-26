@@ -51,6 +51,7 @@ void print_coordinates(std::vector<Edge>& v) {
   }
 }
 
+//not in use currently
 std::vector<Edge> parse_el(std::fstream& f_dimacs, int& num_nodes, int& num_edges) {
   
   std::string line;
@@ -99,7 +100,7 @@ std::vector<Edge> parse_el(std::fstream& f_dimacs, int& num_nodes, int& num_edge
 
 }
 
-
+//returns edges after parsing the dimacs format
 std::vector<Edge> parse_dimacs(std::fstream& f_dimacs, int& num_nodes, int& num_edges) {
   std::string line;
   std::vector<Edge> edges;
@@ -170,6 +171,7 @@ void graph::reorder_edge_dst()
 
 }
 
+//function: to generate the csr format
 void gen_csr(std::vector<Edge>& edges, 
     graph::edge_t* edge_range, graph::node_t* edge_dst, graph::edge_data_t* edge_data, 
     int num_nodes, int num_edges)
@@ -189,7 +191,6 @@ void gen_csr(std::vector<Edge>& edges,
     }
     else {
       edge_dst[cur_edge] = e.dst;
-      //std::cout<<"edge_dst["<<cur_edge<<"]: "<<e.dst<<"\n";
       edge_data[cur_edge] = e.weight;
       cur_edge++;
     }
@@ -253,7 +254,7 @@ bool graph::construct_from_dimacs(char *argv[]) {
   pr[0] = new double [num_nodes+1];
   pr[1] = new double [num_nodes+1];
   out_degree = new int [num_nodes+1];
-  start_address = (uint64_t) &pr[0][0];
+  start_address = (uint64_t) &pr[0][0]; //taking the start address of the pr array
   std::cout<<"start address: "<<std::hex<<start_address<<std::endl;
 #endif
   edge_range = new edge_t [num_nodes+1];

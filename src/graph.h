@@ -1,7 +1,7 @@
 #ifndef SP2018_CS377P_GRAPH_H
 #define SP2018_CS377P_GRAPH_H
 
-#define SP2018_CS377P_STRUCT_OF_ARRAYS
+#define SP2018_CS377P_STRUCT_OF_ARRAYS //It specifies a 2D array for page rank as pr[0-1][0-num_nodes]
 
 #include <string>
 #include <cassert>
@@ -17,9 +17,8 @@ struct Node {
 };
 #endif
 
-//uint64_t edge_data_start_address=0;
-extern uint64_t start_address;
-extern uint64_t cache_line_size;
+extern uint64_t start_address; //to get start address of the pr[][] which forms the property array, to be set inside graph.cpp
+extern uint64_t cache_line_size; //in bytes
 
 
 class graph {
@@ -47,17 +46,15 @@ private:
 #endif
 //initial commit
   // the csr graph
-  edge_t* edge_range;
-  node_t* edge_dst;
-  edge_data_t* edge_data;
+  edge_t* edge_range; //offset array acc to out-degree
+  node_t* edge_dst;   //neighbour array acc to out-degree
+  edge_data_t* edge_data; //weight array acc to out-degree
 
-  //reordered mapping
-  // node_t* reordered_ind;
 
   // the transposed csr graph
-  in_edge_t* in_edge_range;
-  node_t* in_edge_dst;
-  in_edge_data_t* in_edge_data;
+  in_edge_t* in_edge_range;   //offset array acc to in-degree
+  node_t* in_edge_dst;        //neighbour array acc to in-degree
+  in_edge_data_t* in_edge_data;    //weight array acc to in-degree
 
   bool is_allocated;
 

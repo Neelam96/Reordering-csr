@@ -20,7 +20,7 @@ class pagerank {
   size_t round = 0;
 
 private:
-  void initialize() {
+  void initialize() { //initializes the pagerank values
     cur = false;
     round = 0;
     for (auto n = g.begin(); n < g.end(); n++) {
@@ -30,7 +30,7 @@ private:
     }
   }
 
-  void reset_next_round() {
+  void reset_next_round() { //changes the pagerank values for next round computation
     auto num_nodes = g.size_nodes();
     for (auto n = g.begin(); n < g.end(); n++) {
       //std::cout<<"reset_n_R\n";
@@ -38,7 +38,7 @@ private:
     }
   }
 
-  bool is_converged() {
+  bool is_converged() { //to check whether pagerank algo is converged by some threshold value
     for (auto n = g.begin(); n < g.end(); n++) {
       //std::cout<<"is_Conv\n";
       const auto cur_pr = g.get_pr(n, cur);
@@ -50,7 +50,7 @@ private:
     return true;
   }
 
-  void swap_round() {
+  void swap_round() { //to swap the pagerank pointer for current and previous pagerank values
     cur = !cur;
   }
 
@@ -95,7 +95,7 @@ public:
     std::cout << "Converged using " << round << " round(s)." << std::endl;
   }
 
-uint64_t returnLine(uint64_t address)
+uint64_t returnLine(uint64_t address) //determines the cache line number of a given address
 {
   return ((address/cache_line_size) - (start_address/cache_line_size));
 }
@@ -120,7 +120,7 @@ void find_cacheLines(){
   std::cout <<"Total cache lines in original case: " << std::dec <<total_cachelines <<std::endl;
 
 }
-void generate_mapping(){
+void generate_mapping(){ //finds out the cache lines in reordered case
 
   int avg_degree = g.size_edges()/g.size_nodes();
   uint64_t assigned_value = 0;
@@ -225,7 +225,7 @@ for (auto i : umap) {
         cout << i.first << "   " << i.second  
              << endl; 
 }
-
+//push based pagerank computation
     int consecutive_accesses = 0;
     do {
       reset_next_round();
@@ -313,7 +313,7 @@ double calAvgDeg()
 
 }
 
-void analyzeGraph()
+void analyzeGraph() //functio to find out the avg. degree, hot vertices % and edge coverage %
 {
   double avg_degree = ((double)g.size_edges())/g.size_nodes();
   std::cout << g.size_edges() << " " << g.size_nodes() << std::endl;
@@ -341,10 +341,6 @@ void analyzeGraph()
 
 
 int main(int argc, char *argv[]) {
-  // if (argc < 4) {
-  // std::cerr << "Usage: " << argv[0] << " <input.dimacs> <pull|push> <threshold> [sorted]\n";
-  //   return 0;
-  // }
 
   if(argc < 6)
   {
@@ -356,10 +352,7 @@ int main(int argc, char *argv[]) {
   if (!g.construct_from_dimacs(argv)) {
     return 0;
   }
-  //if(!g.construct_from_el(argv))
-  // {
-//	return 0;
- //  }
+
 
 #if 1
   g.print_csr();
@@ -374,13 +367,6 @@ int main(int argc, char *argv[]) {
     return 0;
   }
 
-//for (auto n = g.begin(); n < g.end(); n++) {
-	//for (auto e = g.edge_begin(n); e < g.edge_end(n); e++) {
-	  //	std::cout<<g.get_edge_dst(e)<<" ";
-//	}
-  //    }
-
-
   pagerank pr(g, std::stod(argv[5]));
   if ("pull" == algo) {
     pr.compute_pull();
@@ -388,10 +374,10 @@ int main(int argc, char *argv[]) {
     pr.compute_push();
   }
 	g.print_pr();
-//  pr.print();
 
-pr.find_cacheLines();
-pr.generate_mapping();
-pr.analyzeGraph();
+
+pr.find_cacheLines(); //separte function call to determine the number of cachelines in the original case
+pr.generate_mapping(); //function call to generate the mapping for the reordering 
+pr.analyzeGraph();    //call to function to analyse the graph
   return 0;
 }
